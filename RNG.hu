@@ -1,0 +1,17 @@
+#ifndef RNG_hu
+#define RNG_hu
+
+#include <stdio.h>
+
+class RNG {
+protected:
+    int _seed;
+    
+public:
+//    virtual get_gaus() = 0;
+    __host__ __device__ virtual double get_uniform() = 0; //restituisce double perchè RNG COMB restituisce un numero fra 0 e 1, gli altri restituiscono un intero perche non dividiamo
+//    virtual reset_seed() = 0;
+    
+};
+
+#endif /* RNG_hu */

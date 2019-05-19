@@ -1,0 +1,16 @@
+#ifndef RNG_TAUS_hu
+#define RNG_TAUS_hu
+
+#include "RNG.hu"
+#include <iostream>
+using namespace std;
+
+class RNG_TAUS: public RNG {
+    unsigned int _K1, _K2, _K3, _M;
+    
+public:
+    __host__ __device__ RNG_TAUS(int, unsigned int, unsigned int, unsigned int, unsigned int);
+    __host__ __device__ double get_uniform();
+};
+
+#endif /* RNG_TAUS_hu */

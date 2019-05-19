@@ -1,0 +1,16 @@
+#ifndef RNG_LCG_hu
+#define RNG_LCG_hu
+
+#include <stdio.h>
+#include "RNG_COMB.hu"
+
+class RNG_LCG: public RNG {
+private:
+    unsigned int _a, _b, _m;
+    
+public:
+    __host__ __device__  RNG_LCG(int seed);
+    __host__ __device__ double get_uniform();
+};
+
+#endif /* RNG_LCG_hu */

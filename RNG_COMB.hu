@@ -1,0 +1,19 @@
+#ifndef RNG_COMB_hu
+#define RNG_COMB_hu
+
+#include <stdio.h>
+#include "RNG.hu"
+#include "RNG_LCG.hu"
+#include "RNG_TAUS.hu"
+
+class RNG_COMB: public RNG {
+private:
+    RNG* Taus1, *Taus2, *Taus3, *Lcg;
+    
+public:
+    __host__ __device__ RNG_COMB(int, int, int, int);
+    __host__ __device__ double get_uniform();
+    
+};
+
+#endif /* RNG_COMB_hu */
