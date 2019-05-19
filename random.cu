@@ -21,7 +21,7 @@ struct thread_seed{
         d = rand();
     }
 };
-/*
+
 __global__ void CombinedGenerator(thread_seed* v_thread_seed, double* dev_average_thread, RNG* rng_Comb){
     unsigned int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -34,7 +34,7 @@ __global__ void CombinedGenerator(thread_seed* v_thread_seed, double* dev_averag
     }
 	dev_average_thread[tid] = sum/N_PASSI;
 }
-*/
+
 
 int main(int argc, char**argv){
     int N = atoi(argv[1]);                     //N e' il numero di scenari generato
@@ -63,7 +63,7 @@ int main(int argc, char**argv){
     int THREADS_PER_BLOCK = 1024;
     int N_BLOCK = N/1024 + 1;
     
-/*  SIMULAZIONE KERNEL FUNZIONA SU CPU */
+/*  SIMULAZIONE KERNEL FUNZIONA SU CPU
 	double average_thread[N];
     RNG* rng_Comb;
     for(int tid = 0; tid<N; tid++){
@@ -76,7 +76,7 @@ int main(int argc, char**argv){
 		average_thread[tid] = sum/N_PASSI;
 	}
 
-/*
+
     cudaMalloc((void**)&dev_v_thread_seed,N*sizeof(thread_seed));
     cudaMalloc((void**)&dev_average_thread,N*sizeof(double));
 
@@ -93,7 +93,7 @@ int main(int argc, char**argv){
 
 	cudaFree(dev_v_thread_seed);
 	cudaFree(dev_average_thread);
-*/
+
 }
 
 
