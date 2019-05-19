@@ -22,10 +22,11 @@ struct thread_seed{
     }
 };
 /*
-__global__ void CombinedGenerator(thread_seed* v_thread_seed, double* dev_average_thread){
+__global__ void CombinedGenerator(thread_seed* v_thread_seed, double* dev_average_thread, RNG* rng_Comb){
     unsigned int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
-    RNG* rng_Comb = new RNG_COMB(v_thread_seed[tid].a, v_thread_seed[tid].b, v_thread_seed[tid].c, v_thread_seed[tid].d);
+//    RNG* rng_Comb = new RNG_COMB(v_thread_seed[tid].a, v_thread_seed[tid].b, v_thread_seed[tid].c, v_thread_seed[tid].d);
+    rng_Comb->SetSeed(v_thread_seed[tid].a, v_thread_seed[tid].b, v_thread_seed[tid].c, v_thread_seed[tid].d);
 
 	double sum = 0;
     for(int i=0; i<N_PASSI; i++){
@@ -57,6 +58,8 @@ int main(int argc, char**argv){
         v_thread_seed[i].d = rng_Lcg4->get_uniform();
     }
 
+    RNG* rng_Comb = new RNG_COMB();
+
     int THREADS_PER_BLOCK = 1024;
     int N_BLOCK = N/1024 + 1;
     
@@ -79,7 +82,7 @@ int main(int argc, char**argv){
 
     cudaMemcpy(dev_v_thread_seed,v_thread_seed,N*sizeof(thread_seed),cudaMemcpyHostToDevice);
 
-    CombinedGenerator<<<N_BLOCK,THREADS_PER_BLOCK>>>(dev_v_thread_seed, dev_average_thread);
+    CombinedGenerator<<<N_BLOCK,THREADS_PER_BLOCK>>>(dev_v_thread_seed, dev_average_thread, rng_Comb);
 
     cudaMemcpy(average_thread,dev_average_thread,N*sizeof(double),cudaMemcpyDeviceToHost);
 
