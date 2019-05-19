@@ -22,17 +22,17 @@ struct thread_seed{
     }
 };
 
-__global__ void CombinedGenerator(thread_seed* v_thread_seed, double* dev_average_thread, RNG* rng_Comb){
+__global__ void CombinedGenerator(thread_seed* dev_v_thread_seed, double* dev_average_thread, RNG_COMB* rng_Comb){
     unsigned int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
-//    RNG* rng_Comb = new RNG_COMB(v_thread_seed[tid].a, v_thread_seed[tid].b, v_thread_seed[tid].c, v_thread_seed[tid].d);
-    rng_Comb->SetSeed(v_thread_seed[tid].a, v_thread_seed[tid].b, v_thread_seed[tid].c, v_thread_seed[tid].d);
+//    RNG* rng_Comb = new RNG_COMB(dev_v_thread_seed[tid].a, dev_v_thread_seed[tid].b, dev_v_thread_seed[tid].c, dev_v_thread_seed[tid].d);
+    rng_Comb->SetSeed(dev_v_thread_seed[tid].a, dev_v_thread_seed[tid].b, dev_v_thread_seed[tid].c, dev_v_thread_seed[tid].d);
 
 	double sum = 0;
     for(int i=0; i<N_PASSI; i++){
         sum += rng_Comb->get_uniform();
     }
-	dev_average_thread[tid] = sum/N_PASSI;
+	dev_average_thread[tid] = sum;
 }
 
 
@@ -58,7 +58,7 @@ int main(int argc, char**argv){
         v_thread_seed[i].d = rng_Lcg4->get_uniform();
     }
 
-    RNG* rng_Comb = new RNG_COMB();
+    RNG_COMB* rng_Comb = new RNG_COMB();
 
     int THREADS_PER_BLOCK = 1024;
     int N_BLOCK = N/1024 + 1;
@@ -75,7 +75,7 @@ int main(int argc, char**argv){
 		}
 		average_thread[tid] = sum/N_PASSI;
 	}
-
+*/
 
     cudaMalloc((void**)&dev_v_thread_seed,N*sizeof(thread_seed));
     cudaMalloc((void**)&dev_average_thread,N*sizeof(double));
