@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#define N_PASSI 5 //N_PASSI indica quanti numeri casuali genera ogni thread
+#define N_PASSI 100 //N_PASSI indica quanti numeri casuali genera ogni thread
 
 struct thread_seed{
     double a, b, c, d;
@@ -22,11 +22,10 @@ struct thread_seed{
     }
 };
 
-__global__ void CombinedGenerator(thread_seed* dev_v_thread_seed, double* dev_average_thread, RNG_COMB* rng_Comb){
+__global__ void CombinedGenerator(thread_seed* dev_v_thread_seed, double* dev_average_thread){
     unsigned int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
-//    RNG* rng_Comb = new RNG_COMB(dev_v_thread_seed[tid].a, dev_v_thread_seed[tid].b, dev_v_thread_seed[tid].c, dev_v_thread_seed[tid].d);
-    rng_Comb->SetSeed(dev_v_thread_seed[tid].a, dev_v_thread_seed[tid].b, dev_v_thread_seed[tid].c, dev_v_thread_seed[tid].d);
+    RNG* rng_Comb = new RNG_COMB(dev_v_thread_seed[tid].a, dev_v_thread_seed[tid].b, dev_v_thread_seed[tid].c, dev_v_thread_seed[tid].d);
 
 	double sum = 0;
     for(int i=0; i<N_PASSI; i++){
@@ -82,7 +81,7 @@ int main(int argc, char**argv){
 
     cudaMemcpy(dev_v_thread_seed,v_thread_seed,N*sizeof(thread_seed),cudaMemcpyHostToDevice);
 
-    CombinedGenerator<<<N_BLOCK,THREADS_PER_BLOCK>>>(dev_v_thread_seed, dev_average_thread, rng_Comb);
+    CombinedGenerator<<<N_BLOCK,THREADS_PER_BLOCK>>>(dev_v_thread_seed, dev_average_thread);
 
     cudaMemcpy(average_thread,dev_average_thread,N*sizeof(double),cudaMemcpyDeviceToHost);
 
