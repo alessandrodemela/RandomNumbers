@@ -27,11 +27,11 @@ __global__ void CombinedGenerator(thread_seed* dev_v_thread_seed, double* dev_av
 
     RNG* rng_Comb = new RNG_COMB(dev_v_thread_seed[tid].a, dev_v_thread_seed[tid].b, dev_v_thread_seed[tid].c, dev_v_thread_seed[tid].d);
 
-	double sum = 0;
+	double sum = 0.;
     for(int i=0; i<N_PASSI; i++){
         sum += rng_Comb->get_uniform();
     }
-	dev_average_thread[tid] = sum;
+    dev_average_thread[tid] = 10;
 }
 
 
@@ -57,8 +57,6 @@ int main(int argc, char**argv){
         v_thread_seed[i].d = rng_Lcg4->get_uniform();
     }
 
-    RNG_COMB* rng_Comb = new RNG_COMB();
-
     int THREADS_PER_BLOCK = 1024;
     int N_BLOCK = N/1024 + 1;
     
@@ -78,6 +76,8 @@ int main(int argc, char**argv){
 
     cudaMalloc((void**)&dev_v_thread_seed,N*sizeof(thread_seed));
     cudaMalloc((void**)&dev_average_thread,N*sizeof(double));
+
+    cudaMemset(dev_average_thread,0,N*sizeof(double));
 
     cudaMemcpy(dev_v_thread_seed,v_thread_seed,N*sizeof(thread_seed),cudaMemcpyHostToDevice);
 
