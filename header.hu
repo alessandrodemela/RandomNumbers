@@ -1,0 +1,19 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <vector>
+#include "RNG_LCG.hu"
+#include "RNG_TAUS.hu"
+#include "RNG.hu"
+#include "RNG_COMB.hu"
+
+using namespace std;
+
+#define N_PASSI 100 //N_PASSI indica quanti numeri casuali genera ogni thread
+#define THREADS_PER_BLOCK 1024
+
+struct thread_seed{
+    double a, b, c, d;
+};
+
+__global__ void CombinedGenerator(thread_seed*, double*);

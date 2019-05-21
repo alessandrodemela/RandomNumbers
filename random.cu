@@ -1,31 +1,4 @@
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <vector>
-#include "RNG_LCG.hu"
-#include "RNG_TAUS.hu"
-#include "RNG.hu"
-#include "RNG_COMB.hu"
-
-using namespace std;
-
-#define N_PASSI 100 //N_PASSI indica quanti numeri casuali genera ogni thread
-
-struct thread_seed{
-    double a, b, c, d;
-};
-
-__global__ void CombinedGenerator(thread_seed* dev_v_thread_seed, double* dev_average_thread){
-    unsigned int tid = blockIdx.x * blockDim.x + threadIdx.x;
-
-    RNG* rng_Comb = new RNG_COMB(dev_v_thread_seed[tid].a, dev_v_thread_seed[tid].b, dev_v_thread_seed[tid].c, dev_v_thread_seed[tid].d);
-
-	double sum = 0.;
-    for(int i=0; i<N_PASSI; i++){
-        sum += rng_Comb->get_uniform();
-    }
-    dev_average_thread[tid] = sum;
-}
+#include "header.hu"
 
 
 int main(int argc, char**argv){
@@ -49,7 +22,7 @@ int main(int argc, char**argv){
 
     int THREADS_PER_BLOCK = 1024;
     int N_BLOCK = N/1024 + 1;
-    
+
 /*  SIMULAZIONE KERNEL FUNZIONA SU CPU
 	double average_thread[N];
     RNG* rng_Comb;
@@ -71,6 +44,7 @@ int main(int argc, char**argv){
 
     cudaMemcpy(dev_v_thread_seed,v_thread_seed,N*sizeof(thread_seed),cudaMemcpyHostToDevice);
 
+    int N_BLOCK = N/THREADS_PER_BLOCK + 1;
     CombinedGenerator<<<N_BLOCK,THREADS_PER_BLOCK>>>(dev_v_thread_seed, dev_average_thread);
 
     cudaMemcpy(average_thread,dev_average_thread,N*sizeof(double),cudaMemcpyDeviceToHost);
@@ -82,6 +56,9 @@ int main(int argc, char**argv){
 
 	cudaFree(dev_v_thread_seed);
 	cudaFree(dev_average_thread);
+
+    delete[](v_thread_seed);
+    delete(rng_Lcg);
 
 }
 
